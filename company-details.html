@@ -1,0 +1,177 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-input/paper-input-behavior.html">
+
+<link rel="import" href="../iron-form/iron-form.html">
+
+<link rel="import" href="../ct-shared-styles/ct-application-theme.html">
+<link rel="import" href="../ct-editable-switcher/ct-editable-switcher.html">
+
+<!--
+`ct-owner-details`
+Element for viewing and editing an owners details
+
+@demo demo/index.html
+-->
+
+<dom-module id="company-details">
+    <template>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <style is="custom-style">
+            :host {
+                --paper-input-error: {
+                    color:#00ff00;
+                };
+                --paper-input-container: {
+                    border-top:1px solid #ccc;
+                    border-left:1px solid #ccc;
+                    border-right:1px solid #ccc;
+                    border-bottom: none;
+                    padding: 0;
+                    margin-bottom: 24px;
+                };
+                /*padding to move from border */
+                --paper-input-container-input: {
+                    padding-left: 10px;
+                    left: auto;
+                };
+                --paper-input-container-label: {
+                    margin-left: 10px;
+                };
+                --paper-input-container-label-floating: {
+                    margin-left: 10px;
+                };
+                --paper-input-error: {
+                    left: auto !important;
+                    right: 20px !important;
+                    font-style: italic;
+                };
+                --paper-icon-button-ink-color: var(--breadcrumb-icon-color-ripple);
+            }
+            /* local color for button */
+            paper-button.fancy {
+                margin-top: 3px;
+            }
+            /*local dropdown menu */
+            paper-dropdown-menu.custom-dropdown {
+                width: 100%;
+                --paper-input-container: {
+                    border-top:1px solid #ccc;
+                    border-left:1px solid #ccc;
+                    border-right:1px solid #ccc;
+                    border-bottom: none;
+                    padding: 0;
+                    margin-bottom: 8px;
+                };
+                --paper-input-container-input: {
+                    padding-left: 10px;
+                };
+            }
+            .primary-box-container {
+                background: #3d3d3d;
+                margin-bottom: 40px;
+            }
+            .primary-box-container h3 {
+                color: #ffffff;
+                margin: 10px 0;
+            }
+            .breadcrumb-icon {
+                --paper-icon-button-ink-color: {#fff !important;};
+            }
+            .main-section .primary-box-container h3 {
+                font-size: 20px;
+                line-height: 21px;
+                padding: 0 15px;
+            }
+        </style>
+
+        <div class="main-section">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xs-12 primary-box-container">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-8">
+                                <h3 class="ct-header">Company Details</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form class="" is="iron-form" method="POST">
+                    <div class="row">
+                        <div class="col-sm-6 col-xs-12">
+                            <div class="form-group">
+                                <ct-editable-switcher value-prop="[[ companyData.legalEntityName ]]" edit-mode$="[[ editMode ]]">
+                                    <paper-input
+                                            class="input-element"
+                                            autocapitalize
+                                            label="Trust Name"
+                                            type="text"
+                                            name="legalEntityName"
+                                            value="[[ companyData.legalEntityName ]]"
+                                            required
+                                            auto-validate
+                                            error-message="Please provide a trust name">
+                                    </paper-input>
+                                </ct-editable-switcher>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xs-12">
+                            <div class="form-group">
+                                <ct-editable-switcher value-prop="[[ companyData.registrationNumber ]]" edit-mode$="[[ editMode ]]">
+                                    <paper-input
+                                            class="input-element"
+                                            label="Registration Number"
+                                            type="text"
+                                            name="registrationNumber"
+                                            value="[[ companyData.registrationNumber ]]"
+                                            required
+                                            auto-validate
+                                            error-message="Please provide a registration number">
+                                    </paper-input>
+                                </ct-editable-switcher>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xs-12">
+                            <div class="form-group">
+                                <ct-editable-switcher value-prop="[[ companyData.vatNumber ]]" edit-mode$="[[ editMode ]]">
+                                    <paper-input
+                                            class="input-element"
+                                            label="VAT Number"
+                                            type="text"
+                                            name="vatNumber"
+                                            value="[[ companyData.vatNumber ]]"
+                                            required
+                                            auto-validate
+                                            error-message="Please provide a VAT number">
+                                    </paper-input>
+                                </ct-editable-switcher>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div> <!-- table Container -->
+        </div>
+    </template>
+
+    <script>
+        Polymer({
+            is: 'company-details',
+            behaviors: [CT.Behaviours.ApiConsumer],
+
+            properties: {
+                companyData: String,
+                editMode: Boolean
+            },
+
+            validate: function () {
+                return this.$$('form').validate();
+            },
+
+            getCompanyData: function(e) {
+                return this.$$('form').serialize();
+            }
+        });
+    </script>
+</dom-module>

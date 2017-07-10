@@ -1,0 +1,348 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="../gold-email-input/gold-email-input.html">
+<link rel="import" href="../gold-phone-input/gold-phone-input.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-input/paper-input-behavior.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../paper-item/paper-icon-item.html">
+<link rel="import" href="../paper-material/paper-material.html">
+<link rel="import" href="../paper-listbox/paper-listbox.html">
+<link rel="import" href="../paper-dialog/paper-dialog.html">
+
+<link rel="import" href="../iron-form/iron-form.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+
+<link rel="import" href="../ct-shared-styles/ct-application-theme.html">
+<link rel="import" href="../ct-core-utils/ct-api-consumer-behaviour.html">
+<link rel="import" href="../ct-editable-switcher/ct-editable-switcher.html">
+<link rel="import" href="../ct-owners-api/ct-owners-api.html">
+<link rel="import" href="../ct-view-audit-log/ct-view-audit-log.html">
+
+<link rel="import" href="trust-details.html">
+<link rel="import" href="company-details.html">
+
+<!--
+`ct-owner-details`
+Element for viewing and editing an owners details
+
+@demo demo/index.html 
+-->
+
+<dom-module id="ct-owner-details">
+  <template>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <style is="custom-style">
+      :host {
+        --paper-input-error: {
+          color:#00ff00;
+        };
+        --paper-input-container: {
+          border-top:1px solid #ccc;
+          border-left:1px solid #ccc;
+          border-right:1px solid #ccc;
+          border-bottom: none;
+          padding: 0;
+          margin-bottom: 24px;
+        };
+        /*padding to move from border */
+        --paper-input-container-input: {
+          padding-left: 10px;
+          left: auto;
+        };
+        --paper-input-container-label: {
+          margin-left: 10px;
+        };
+        --paper-input-container-label-floating: {
+          margin-left: 10px;
+        };
+        --paper-input-error: {
+          left: auto !important;
+          right: 20px !important;
+          font-style: italic;
+        };
+        --paper-icon-button-ink-color: var(--breadcrumb-icon-color-ripple);
+      }
+      /* local color for button */
+      paper-button.fancy {
+        margin-top: 3px;
+      }
+      /*local dropdown menu */
+      paper-dropdown-menu.custom-dropdown {
+        width: 100%;
+        --paper-input-container: {
+          border-top:1px solid #ccc;
+          border-left:1px solid #ccc;
+          border-right:1px solid #ccc;
+          border-bottom: none;
+          padding: 0;
+          margin-bottom: 8px;
+        };
+        --paper-input-container-input: {
+          padding-left: 10px;
+        };
+      }
+      .primary-box-container {
+        background: #3d3d3d;
+        margin-bottom: 40px;
+      }
+      .primary-box-container h3 {
+        color: #ffffff;
+        margin: 10px 0;
+      }
+      .breadcrumb-icon {
+        --paper-icon-button-ink-color: {#fff !important;};
+      }
+      .main-section .primary-box-container h3 {
+        font-size: 20px;
+        line-height: 21px;
+        padding: 0 15px;
+      }
+    </style>
+
+    <ct-owners-api id="ownersApi"></ct-owners-api>
+
+    <div class="main-section">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-xs-12 primary-box-container">
+            <div class="row">
+              <div class="col-xs-12 col-sm-8">
+                <h3 class="ct-header">[[ _ownerData.name ]]&nbsp;[[ _ownerData.surname ]]</h3>
+              </div>
+              <div class="col-xs-12 col-sm-4">
+                <paper-button class="fancy margin-10v pull-right btn btn-danger" on-tap="_openDeleteModal">Delete</paper-button>
+                <paper-button class$="fancy margin-10v pull-right btn [[_computeBtnStyle(_isStateEdit)]]" on-tap="_editBtnHandler">[[_computeButtonText(_isStateEdit)]]</paper-button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <form class="" is="iron-form" method="POST">
+          <div class="row">
+            <div class="col-sm-6 col-xs-12">
+              <div class="form-group">
+                <ct-editable-switcher value-prop="[[ _ownerData.name ]]" edit-mode$="[[ _isStateEdit ]]">
+                  <paper-input
+                          class="input-element"
+                          autocapitalize
+                          label="First Name"
+                          type="text"
+                          name="firstName"
+                          value="{{ _ownerData.name }}"
+                          required
+                          auto-validate
+                          error-message="Please provide a first name">
+                  </paper-input>
+                </ct-editable-switcher>
+              </div>
+            </div>
+            <div class="col-sm-6 col-xs-12">
+              <div class="form-group">
+                <ct-editable-switcher value-prop="[[ _ownerData.surname ]]" edit-mode$="[[ _isStateEdit ]]">
+                  <paper-input
+                          class="input-element"
+                          label="Last Name"
+                          type="text"
+                          name="lastName"
+                          value="[[ _ownerData.surname ]]"
+                          required
+                          auto-validate
+                          error-message="Please provide a last name">
+                  </paper-input>
+                </ct-editable-switcher>
+              </div>
+            </div>
+            <div class="col-sm-6 col-xs-12">
+              <div class="form-group">
+                <ct-editable-switcher value-prop="[[ _ownerData.email ]]" edit-mode$="[[ _isStateEdit ]]">
+                  <gold-email-input
+                          class="input-element"
+                          name="email"
+                          label="Email"
+                          prevent-invalid-input
+                          value="[[ _ownerData.email ]]"
+                          required
+                          auto-validate
+                          error-message="Please enter a valid email address">
+                  </gold-email-input>
+                </ct-editable-switcher>
+              </div>
+            </div>
+            <div class="col-sm-6 col-xs-12">
+              <div class="form-group">
+                <ct-editable-switcher value-prop="[[ _ownerData.phone ]]" edit-mode$="[[ _isStateEdit ]]">
+                  <gold-phone-input
+                          country-code="27"
+                          class="input-element"
+                          prevent-invalid-input
+                          name="phone"
+                          label="Phone"
+                          value="[[ _ownerData.phone ]]"
+                          auto-validate
+                          char-counter
+                          error-message="Invalid phone number">
+                  </gold-phone-input>
+                </ct-editable-switcher>
+              </div>
+            </div>
+            <div class="col-sm-6 col-xs-12">
+              <div class="form-group">
+                <ct-editable-switcher value-prop="[[ _ownerData.idNumber ]]" edit-mode$="[[ _isStateEdit ]]">
+                  <paper-input
+                          class="input-element"
+                          label="ID Number"
+                          type="text"
+                          name="idNumber"
+                          value="[[ _ownerData.idNumber ]]"
+                          required
+                          auto-validate
+                          error-message="Please provide an id number">
+                  </paper-input>
+                </ct-editable-switcher>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <template is="dom-if" if="[[ _ownerData.trust ]]">
+          <trust-details id="trustDetails" trust-data="[[ _ownerData.trust ]]" edit-mode$="[[ _isStateEdit ]]"></trust-details>
+        </template>
+        <template is="dom-if" if="[[ _ownerData.company ]]">
+          <company-detail id="companyDetails" company-data="[[ _ownerData.company ]]" edit-mode$="[[ _isStateEdit ]]"></company-detail>
+        </template>
+
+        <ct-view-audit-log audit-data="[[ _auditData ]]"></ct-view-audit-log>
+
+
+
+      </div> <!-- table Container -->
+    </div>
+
+    <paper-dialog
+            id="deleteModal"
+            modal
+            on-iron-overlay-opened="_patchOverlay">
+      <h2>Confirm Delete</h2>
+      <p>Are you sure you want to delete this owner?</p>
+      <div class="buttons">
+        <paper-button class="btn btn-link" dialog-dismiss>Cancel</paper-button>
+        <paper-button class="btn btn-primary" on-tap="_deleteUser" autofocus raised>Delete</paper-button>
+      </div>
+    </paper-dialog>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'ct-owner-details',
+      behaviors: [CT.Behaviours.ApiConsumer],
+
+      properties: {
+        ownerId: String
+      },
+
+      listeners : {
+        'iron-form-presubmit': '_formHandler'
+      },
+
+      observers: [ '_init(ownerId)' ],
+
+      refresh: function () {
+        if (this.ownerId) {
+          this._init();
+        }
+      },
+
+      _init: function () {
+        this._isStateEdit = false;
+        this._getOwner();
+        this._getOwnerAuditLog();
+        this._getOwnerNotes();
+      },
+
+      _getOwner: function () {
+        this.$.ownersApi.getOwner(this.ownerId)
+          .then(this._setPropertyResponse.bind(this, '_ownerData'))
+          .catch(this.fire.bind(this, 'toast', {message: 'Failed to load owner details', type: 'danger'}))
+          .finally(this.set.bind(this, 'refreshing', false));
+      },
+
+      _getOwnerAuditLog: function () {
+        this.$.ownersApi.getOwnerAuditLog(this.ownerId)
+          .then(this._setPropertyResponseResults.bind(this, '_auditData'))
+          .catch(this.fire.bind(this, 'toast', {message: 'Failed to load owner audit log', type: 'danger'}))
+      },
+
+      _getOwnerNotes: function () {
+
+      },
+
+      _computeButtonText: function(isEdit) {
+        return (isEdit) ? 'Save Details' : 'Edit Details';
+      },
+
+      _computeBtnStyle : function(isEdit) {
+        return (isEdit) ? "btn-success" : "btn-primary";
+      },
+
+      _toggleStatus : function() {
+        this._isStateEdit = !this._isStateEdit;
+      },
+
+      _editBtnHandler : function() {
+        var form = this.$$('form');
+        var trustForm = this.$$('#trustDetails');
+        var companyForm = this.$$('#companyDetails');
+
+        if (this._isStateEdit) {
+          var trustValid = (trustForm && trustForm.validate()) || (!trustForm && !companyForm);
+          var companyValid = (companyForm && companyForm.validate()) || (!trustForm && !companyForm);
+
+          if (form.validate() && (trustValid || companyValid)) {
+            form.submit();
+          }
+        } else {
+          this._toggleStatus();
+        }
+      },
+
+      _formHandler : function(e) {
+        var form = this.$$('form').serialize(),
+                newOwnerData = {};
+        var trustForm = this.$$('#trustDetails');
+        var companyForm = this.$$('#companyDetails');
+
+        e.preventDefault();
+
+        newOwnerData.name = form.firstName;
+        newOwnerData.surname = form.lastName;
+        newOwnerData.email = form.email;
+        newOwnerData.phone = form.phone;
+        newOwnerData.idNumber = form.idNumber;
+        newOwnerData.trust = trustForm ? trustForm.getTrustData() : null;
+        newOwnerData.company = companyForm ? companyForm.getCompanyData() : null;
+
+        this.$.ownersApi.updateOwner(this._ownerData.id, newOwnerData)
+                .then(this.fire.bind(this, 'toast', {message: 'Owner details updated', type: 'success'}))
+                .catch(this.fire.bind(this, 'toast', {message: 'Failed to update owner details', type: 'danger'}))
+                .finally(function() {
+                  this.refreshing = false;
+                  this._toggleStatus();
+                }.bind(this));
+      },
+
+      _patchOverlay: function (e) {
+        if (e.target.withBackdrop) {
+          e.target.parentNode.insertBefore(e.target.backdropElement, e.target);
+        }
+      },
+
+      _openDeleteModal : function() {
+        this.$.deleteModal.open();
+      },
+
+    });
+  </script>
+</dom-module>

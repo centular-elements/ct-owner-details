@@ -19,6 +19,7 @@
 <link rel="import" href="../ct-editable-switcher/ct-editable-switcher.html">
 <link rel="import" href="../ct-owners-api/ct-owners-api.html">
 <link rel="import" href="../ct-view-audit-log/ct-view-audit-log.html">
+<link rel="import" href="../ct-notes/ct-notes.html">
 
 <link rel="import" href="trust-details.html">
 <link rel="import" href="company-details.html">
@@ -215,7 +216,7 @@ Element for viewing and editing an owners details
 
         <ct-view-audit-log audit-data="[[ _auditData ]]"></ct-view-audit-log>
 
-
+        <ct-notes notes="[[ _ownerNotes ]]"></ct-notes>
 
       </div> <!-- table Container -->
     </div>
@@ -244,7 +245,8 @@ Element for viewing and editing an owners details
       },
 
       listeners : {
-        'iron-form-presubmit': '_formHandler'
+        'iron-form-presubmit': '_formHandler',
+        'new-note': '_createNewNote'
       },
 
       observers: [ '_init(ownerId)' ],
@@ -276,7 +278,9 @@ Element for viewing and editing an owners details
       },
 
       _getOwnerNotes: function () {
-
+        this.$.ownersApi.getOwnerNotes(this.ownerId)
+          .then(this._setPropertyResponseResults.bind(this, '_ownerNotes'))
+          .catch(this.fire.bind(this, 'toast', {message: 'Failed to load owner notes', type: 'danger'}))
       },
 
       _computeButtonText: function(isEdit) {
@@ -342,6 +346,14 @@ Element for viewing and editing an owners details
       _openDeleteModal : function() {
         this.$.deleteModal.open();
       },
+
+      _createNewNote: function (e) {
+        this.$.ownersApi.createOwnerNote(this.ownerId, e.detail)
+          .then(function () {
+            this._getOwnerNotes();
+          }.bind(this))
+          .catch(this.fire.bind(this, 'toast', {message: 'Failed to load owner notes', type: 'danger'}))
+      }
 
     });
   </script>

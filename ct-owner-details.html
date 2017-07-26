@@ -28,7 +28,7 @@
 `ct-owner-details`
 Element for viewing and editing an owners details
 
-@demo demo/index.html 
+@demo demo/index.html
 -->
 
 <dom-module id="ct-owner-details">
@@ -98,7 +98,6 @@ Element for viewing and editing an owners details
       .main-section .primary-box-container h3 {
         font-size: 20px;
         line-height: 21px;
-        padding: 0 15px;
       }
     </style>
 
@@ -215,8 +214,10 @@ Element for viewing and editing an owners details
         </template>
 
         <ct-view-audit-log audit-data="[[ _auditData ]]"></ct-view-audit-log>
+        <div class="row">
+            <ct-notes notes="[[ _ownerNotes ]]"></ct-notes>
+        </div>
 
-        <ct-notes notes="[[ _ownerNotes ]]"></ct-notes>
 
       </div> <!-- table Container -->
     </div>
